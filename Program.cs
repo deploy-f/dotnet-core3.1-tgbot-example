@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -20,10 +21,18 @@ namespace Telegram.Bot.Examples.Echo
         public static async Task Main()
         {
 
+            IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+            var botSettings = configuration.GetSection("BotSettings").Get<BotSettings>();
+
             var cts = new CancellationTokenSource();
 
             try {
-                Bot = new TelegramBotClient(Configuration.BotToken);
+                Bot = new TelegramBotClient(botSettings.BotToken);
 
                 var me = await Bot.GetMeAsync();
                 Console.Title = me.Username;
