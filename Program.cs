@@ -20,24 +20,24 @@ namespace Telegram.Bot.Examples.Echo
         public static async Task Main()
         {
 
-            Bot = new TelegramBotClient(Configuration.BotToken);
-
-            var me = await Bot.GetMeAsync();
-            Console.Title = me.Username;
-
             var cts = new CancellationTokenSource();
 
-            // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
-            Bot.StartReceiving(
-                new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
-                cts.Token
-            );
+            try {
+                Bot = new TelegramBotClient(Configuration.BotToken);
 
-            Console.WriteLine($"Start listening for @{me.Username}");
-            Console.ReadLine();
+                var me = await Bot.GetMeAsync();
+                Console.Title = me.Username;
+                Console.WriteLine("GetMe:" + me.Username);
 
-            // Send cancellation request to stop bot
-            cts.Cancel();
+                Console.WriteLine($"Start listening for @{me.Username}");
+
+                await Bot.ReceiveAsync(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cts.Token);
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                // Send cancellation request to stop bot
+                cts.Cancel();
+            }
         }
 
         public static async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
