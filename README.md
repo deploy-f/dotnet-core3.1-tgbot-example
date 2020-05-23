@@ -1,6 +1,6 @@
 # Example of the Telegram chatbot for .NET 3.1
 
-## How to launch a bot
+ **How to launch a bot**
  1. Clone this repo
  2. Build project in Release mode
    ```dotnet run publish -c Release -o publish```
